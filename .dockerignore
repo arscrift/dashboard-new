@@ -1,0 +1,8 @@
+# Ignore
+Dockerfile
+node_modules
+README.md
+.dockerignore
+.gitignore
+deploy.sh
+.git
