@@ -4,6 +4,7 @@ import { SalvarComponent } from './salvar/salvar.component';
 import { CategoriaRoutingModule } from './categoria-routing.module';
 import { ManterCategoriaComponent } from './manter-categoria.component';
 import { MatFormFieldModule, MatInputModule, MatCardModule, MatTableModule } from '@angular/material';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 @NgModule({
 	declarations: [SalvarComponent, ManterCategoriaComponent],
@@ -13,7 +14,9 @@ import { MatFormFieldModule, MatInputModule, MatCardModule, MatTableModule } fro
 		MatFormFieldModule,
 		MatInputModule,
 		MatCardModule,
-		MatTableModule
+		MatTableModule,
+		FormsModule,
+        ReactiveFormsModule
 	]
 })
 export class CategoriaModule { }

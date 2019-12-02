@@ -4,6 +4,7 @@ import { SalvarComponent } from './salvar/salvar.component';
 import { EventoRoutingModule } from './evento-routing.module';
 import { ManterEventoComponent } from './manter-evento.component';
 import { MatInputModule, MatFormFieldModule, MatCardModule, MatTableModule } from '@angular/material';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 @NgModule({
 	declarations: [ManterEventoComponent, SalvarComponent],
@@ -13,7 +14,9 @@ import { MatInputModule, MatFormFieldModule, MatCardModule, MatTableModule } fro
 		MatFormFieldModule,
 		MatInputModule,
 		MatCardModule,
-		MatTableModule
+		MatTableModule,
+		FormsModule,
+        ReactiveFormsModule
 	]
 })
 export class EventoModule { }
