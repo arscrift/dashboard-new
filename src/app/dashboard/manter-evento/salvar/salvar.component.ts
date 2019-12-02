@@ -1,15 +1,136 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { EventoModel } from 'src/app/model/models.model';
+import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-salvar',
-  templateUrl: './salvar.component.html',
-  styleUrls: ['./salvar.component.css']
+	selector: 'salvar',
+	templateUrl: './salvar.component.html',
+	styleUrls: ['./salvar.component.css']
 })
-export class SalvarComponent implements OnInit {
+export class SalvarComponent implements OnInit, OnDestroy {
 
-  constructor() { }
+	private evento: EventoModel;
 
-  ngOnInit() {
-  }
+	public arquivo: File;
+	public temArquivo: boolean = false;
+	public btnAcionado: boolean = false;
+	public arquivoCarregado: boolean = false;
+	public nomeDoArquivo: string;
+
+	public formulario: FormGroup;
+	private subscription: Subscription;
+
+	constructor(
+		private notification: ToastrService,
+		private formBuilder: FormBuilder
+	) { }
+
+	ngOnInit() {
+		this.initForm();
+	}
+
+	ngOnDestroy(): void { }
+
+	initForm(): void {
+		this.formulario = this.formBuilder.group({
+			titulo: [null, [Validators.required, Validators.minLength(2), Validators.maxLength(200)]],
+			descricao: [null, [Validators.required, Validators.minLength(5), Validators.maxLength(400)]],
+			apresentacao: [null, [Validators.required, Validators.minLength(50), Validators.maxLength(2000)]],
+			precoUnitario: [null, [Validators.required, Validators.minLength(2), Validators.maxLength(200)]],
+			quantidadeDeVagas: [null, [Validators.required, Validators.minLength(2), Validators.maxLength(200)]],
+			urlDoGoogleMaps: [null, [Validators.required, Validators.minLength(2), Validators.maxLength(1000)]],
+		});
+	}
+
+	limpar(): void {
+		this.initForm();
+		this.formulario.reset();
+	}
+
+	popularFormulario(valor: any): void {
+		this.formulario.get('titulo').setValue(valor.titulo);
+		this.formulario.get('descricao').setValue(valor.descricao);
+		this.formulario.get('apresentacao').setValue(valor.descricao);
+		this.formulario.get('precoUnitario').setValue(valor.descricao);
+		this.formulario.get('quantidadeDeVagas').setValue(valor.descricao);
+		this.formulario.get('urlDoGoogleMaps').setValue(valor.descricao);
+	}
+
+	salvar(): void {
+		if (this.formulario.valid) {
+			this.btnAcionado = true;
+			const evento = new EventoModel(this.formulario.value);
+			if (this.arquivo) {
+				evento.imagem = this.arquivo;
+			}
+			if (this.evento.codigo) {
+				evento.codigo = this.evento.codigo;
+				this.alterar(evento);
+			} else {
+				if (this.arquivo) {
+					this.inserir(evento);
+				} else {
+					this.notification.warning('Mensagem', 'Formulário invalido. É preciso fazer upload de uma foto.');
+					this.btnAcionado = false;
+				}
+			}
+		} else {
+			this.notification.warning('Mensagem', 'Formulário invalido. Preencha os campos corretamente.');
+		}
+	}
+
+	inserir(evento: EventoModel): void {
+		// this.subscription = this.eventoServico.inserirConsulta(evento).subscribe(
+		//     (res) => {
+		//         this.notification.success('Mensagem', res.mensagem);
+		//         this.btnAcionado = false;
+		//     },
+		//     (err: HttpErrorResponse) => {
+		//         this.btnAcionado = false;
+		//         this.notification.warning('Erro', err.error.stack || err.statusText);
+		//     },
+		//     () => {}
+		// );
+	}
+
+	alterar(evento: EventoModel): void {
+		// this.subscription = this.eventoServico.alterarConsulta(evento).subscribe(
+		//     (res) => {
+		//         this.notification.success('Mensagem', res.mensagem);
+		//         this.btnAcionado = false;
+		//     },
+		//     (err: HttpErrorResponse) => {
+		//         this.btnAcionado = false;
+		//         this.notification.warning('Erro', err.error.stack || err.statusText);
+		//     },
+		//     () => {}
+		// );
+	}
+
+	onDrop(file: FileList): void {
+		if (file[0].size > 1024 * 2048) { // LIMITE DE 2MB
+			this.notification.warning('Mensagem', 'O arquivo excede o limite de 2MB');
+			this.arquivo = null;
+		} else if (file[0].size == 0) {
+			this.notification.warning('Mensagem', 'O arquivo é muito pequeno');
+			this.arquivo = null;
+		} else if (file[0].type != 'image/jpeg') { // TIPO DO ARQUIVO
+			this.notification.warning('Mensagem', 'Formato de arquivo invalido');
+			this.arquivo = null;
+		} else {
+			this.notification.success('Mensagem', 'Arquivo carregado com sucesso');
+			this.arquivo = file[0];
+			this.temArquivo = true;
+			this.arquivoCarregado = true;
+			this.nomeDoArquivo = file[0].name;
+		}
+	}
+
+	apagarArquivo(): void {
+		this.arquivo = null;
+		this.temArquivo = false;
+	}
 
 }

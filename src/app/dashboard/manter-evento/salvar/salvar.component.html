@@ -1,9 +1,44 @@
-<mat-card class="card-form">
+<mat-card class="card-form" [formGroup]="formulario">
     <mat-form-field>
-        <input matInput placeholder="Input">
+        <input matInput placeholder="Titulo" formControlName="titulo">
     </mat-form-field>
 
     <mat-form-field>
-        <textarea matInput placeholder="Textarea"></textarea>
+        <textarea matInput placeholder="Descrição" formControlName="descricao"></textarea>
     </mat-form-field>
+
+    <mat-form-field>
+        <textarea matInput placeholder="Apresentação" formControlName="apresentacao"></textarea>
+    </mat-form-field>
+
+    <mat-form-field>
+        <input matInput placeholder="Preço unitário" formControlName="precoUnitario">
+    </mat-form-field>
+
+    <mat-form-field>
+        <input matInput placeholder="Quantidade de vagas" formControlName="quantidadeDeVagas">
+    </mat-form-field>
+
+    <mat-form-field>
+        <input matInput placeholder="URL do GoogleMaps" formControlName="urlDoGoogleMaps">
+    </mat-form-field>
+
+    <div class="col-12">
+        <input type="file" accept="image/jpeg" #fileinput style="display: none;"
+            (change)="onDrop(fileinput.files); fileinput.value = ''">
+
+        <div class="upload-drop-zone" #dropzone [ngClass]="{'drop': isHovered === dropzone }"
+            (mouseover)="isHovered = $event.target" (mouseleave)="isHovered = null" (appDropZone)="onDrop($event)">
+            Arraste e solte ou <span (click)="fileinput.click()" class="dropzone-link"> Clique aqui.</span>
+        </div>
+
+        <ul class="list-group mb-3">
+            <li class="list-group-item d-flex justify-content-between align-items-center" *ngIf="temArquivo">
+                {{nomeDoArquivo}}
+                <span class="badge float-right" *ngIf="arquivoCarregado" (click)="apagarArquivo();">
+                    <i class="material-icons">delete_forever</i>
+                </span>
+            </li>
+        </ul>
+    </div>
 </mat-card>
