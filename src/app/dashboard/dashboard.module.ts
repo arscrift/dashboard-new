@@ -6,6 +6,8 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { DashboardComponent } from './dashboard.component';
 import { NavegacaoComponent } from './navegacao/navegacao.component';
 import { PresencaComponent } from './presenca/presenca.component';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpResponseInterceptor } from './http-response-interceptor';
 
 @NgModule({
 	declarations: [
@@ -15,6 +17,7 @@ import { PresencaComponent } from './presenca/presenca.component';
 	],
 	imports: [
 		CommonModule,
+		HttpClientModule,
 		DashboardRoutingModule,
 		MatIconModule,
 		MatButtonModule,
@@ -22,6 +25,9 @@ import { PresencaComponent } from './presenca/presenca.component';
 		MatSidenavModule,
 		MatTreeModule,
 		MatCardModule
+	],
+	providers: [
+		{ provide: HTTP_INTERCEPTORS, useClass: HttpResponseInterceptor, multi: true },
 	]
 })
 export class DashboardModule { }

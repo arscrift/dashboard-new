@@ -8,6 +8,7 @@
     </mat-form-field>
 
     <div class="col-12">
+        <label>Imagem</label>
         <input type="file" accept="image/jpeg" #fileinput style="display: none;"
             (change)="onDrop(fileinput.files); fileinput.value = ''">
 
@@ -25,4 +26,5 @@
             </li>
         </ul>
     </div>
+    <button mat-raised-button color="primary" (click)="salvar()">Salvar</button>
 </mat-card>

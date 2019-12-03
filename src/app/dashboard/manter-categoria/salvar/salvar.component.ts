@@ -1,8 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import {ToastrService} from 'ngx-toastr';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { CategoriaModel } from 'src/app/model/models.model';
 import { Subscription } from 'rxjs';
+import { CategoriaModel } from '../categoria.model';
+import { CategoriaService } from '../categoria.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
 	selector: 'salvar',
@@ -23,15 +25,20 @@ export class SalvarComponent implements OnInit, OnDestroy {
     private subscription: Subscription;
 
 	constructor(
-        private notification: ToastrService,
-        private formBuilder: FormBuilder
+        private toastrService: ToastrService,
+        private formBuilder: FormBuilder,
+        private categoriaService: CategoriaService
 	) { }
 
 	ngOnInit() {
         this.initForm();
     }
 
-    ngOnDestroy(): void { }
+    ngOnDestroy(): void {
+        if (this.subscription) {
+            this.subscription.unsubscribe();
+        }
+    }
     
     initForm(): void {
         this.formulario = this.formBuilder.group({
@@ -53,66 +60,66 @@ export class SalvarComponent implements OnInit, OnDestroy {
     salvar(): void {
         if (this.formulario.valid) {
             this.btnAcionado = true;
-            const categoria = new CategoriaModel(this.formulario.value);
+            this.categoria = new CategoriaModel(this.formulario.value);
             if (this.arquivo) {
-                categoria.imagem = this.arquivo;
+                this.categoria.imagem = this.arquivo;
             }
             if (this.categoria.codigo) {
-                categoria.codigo = this.categoria.codigo;
-                this.alterar(categoria);
+                this.categoria.codigo = this.categoria.codigo;
+                this.alterar(this.categoria);
             } else {
                 if (this.arquivo) {
-                    this.inserir(categoria);
+                    this.inserir(this.categoria);
                 } else {
-                    this.notification.warning('Mensagem', 'Formulário invalido. É preciso fazer upload de uma foto.');
+                    this.toastrService.warning('Mensagem', 'Formulário invalido. É preciso fazer upload de uma foto.');
                     this.btnAcionado = false;
                 }
             }
         } else {
-            this.notification.warning('Mensagem', 'Formulário invalido. Preencha os campos corretamente.');
+            this.toastrService.warning('Mensagem', 'Formulário invalido. Preencha os campos corretamente.');
         }
     }
 
     inserir(categoria: CategoriaModel): void {
-        // this.subscription = this.categoriaServico.inserirConsulta(categoria).subscribe(
-        //     (res) => {
-        //         this.notification.success('Mensagem', res.mensagem);
-        //         this.btnAcionado = false;
-        //     },
-        //     (err: HttpErrorResponse) => {
-        //         this.btnAcionado = false;
-        //         this.notification.warning('Erro', err.error.stack || err.statusText);
-        //     },
-        //     () => {}
-        // );
+        this.subscription = this.categoriaService.inserirCategoria(categoria).subscribe(
+            (res) => {
+                this.toastrService.success('Mensagem', res.mensagem);
+                this.btnAcionado = false;
+            },
+            (err: HttpErrorResponse) => {
+                this.btnAcionado = false;
+                this.toastrService.warning('Erro', err.error.stack || err.statusText);
+            },
+            () => {}
+        );
     }
 
     alterar(categoria: CategoriaModel): void {
-        // this.subscription = this.categoriaServico.alterarConsulta(categoria).subscribe(
-        //     (res) => {
-        //         this.notification.success('Mensagem', res.mensagem);
-        //         this.btnAcionado = false;
-        //     },
-        //     (err: HttpErrorResponse) => {
-        //         this.btnAcionado = false;
-        //         this.notification.warning('Erro', err.error.stack || err.statusText);
-        //     },
-        //     () => {}
-        // );
+        this.subscription = this.categoriaService.alterarCategoria(categoria).subscribe(
+            (res) => {
+                this.toastrService.success('Mensagem', res.mensagem);
+                this.btnAcionado = false;
+            },
+            (err: HttpErrorResponse) => {
+                this.btnAcionado = false;
+                this.toastrService.warning('Erro', err.error.stack || err.statusText);
+            },
+            () => {}
+        );
     }
 
 	onDrop(file: FileList): void {
         if (file[0].size > 1024 * 2048) { // LIMITE DE 2MB
-            this.notification.warning('Mensagem', 'O arquivo excede o limite de 2MB');
+            this.toastrService.warning('Mensagem', 'O arquivo excede o limite de 2MB');
             this.arquivo = null;
         } else if (file[0].size == 0) {
-            this.notification.warning('Mensagem', 'O arquivo é muito pequeno');
+            this.toastrService.warning('Mensagem', 'O arquivo é muito pequeno');
             this.arquivo = null;
         } else if (file[0].type != 'image/jpeg') { // TIPO DO ARQUIVO
-            this.notification.warning('Mensagem', 'Formato de arquivo invalido');
+            this.toastrService.warning('Mensagem', 'Formato de arquivo invalido');
             this.arquivo = null;
         } else {
-            this.notification.success('Mensagem', 'Arquivo carregado com sucesso');
+            this.toastrService.success('Mensagem', 'Arquivo carregado com sucesso');
             this.arquivo = file[0];
             this.temArquivo = true;
             this.arquivoCarregado = true;
