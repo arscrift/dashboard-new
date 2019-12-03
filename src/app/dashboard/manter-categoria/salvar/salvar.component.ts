@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { CategoriaModel } from '../categoria.model';
 import { CategoriaService } from '../categoria.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
 	selector: 'salvar',
@@ -27,11 +28,26 @@ export class SalvarComponent implements OnInit, OnDestroy {
 	constructor(
         private toastrService: ToastrService,
         private formBuilder: FormBuilder,
-        private categoriaService: CategoriaService
+        private categoriaService: CategoriaService,
+        private route: ActivatedRoute
 	) { }
 
 	ngOnInit() {
         this.initForm();
+        this.route.params.subscribe(
+            (params) => {
+                this.categoriaService.buscarCategoria(parseInt(params['codigo-da-categoria'])).subscribe(
+                    (res) => {},
+                    (err: HttpErrorResponse) => {
+                        this.toastrService.warning('Erro', err.error.stack || err.statusText);
+                    },
+                    () => {}
+                )
+            },
+            (erro) => {
+                console.log(erro);
+            }
+        );
     }
 
     ngOnDestroy(): void {

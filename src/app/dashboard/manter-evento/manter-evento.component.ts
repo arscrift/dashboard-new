@@ -25,7 +25,6 @@ export class ManterEventoComponent implements OnInit, OnDestroy {
 	ngOnInit() {
 		this.subscription = this.eventoService.listarEventos().subscribe(
             (res) => {
-				//this.toastrService.success('Mensagem', res.mensagem);
 				this.eventos = res;
             },
             (err: HttpErrorResponse) => {

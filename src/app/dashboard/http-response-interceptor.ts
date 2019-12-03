@@ -35,7 +35,7 @@ export class HttpResponseInterceptor implements HttpInterceptor {
                     if(err instanceof HttpErrorResponse) {
                         switch (err.status) {
                             case 0: {
-                                this.toastrService.info('Conecção recusada', err.statusText);
+                                this.toastrService.warning('Conecção recusada', err.statusText);
                                 break;
                             }
                             case 400: {

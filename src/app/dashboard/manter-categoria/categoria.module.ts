@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { PopoverModule } from 'ngx-bootstrap/popover';
 import { SalvarComponent } from './salvar/salvar.component';
 import { CategoriaRoutingModule } from './categoria-routing.module';
 import { ManterCategoriaComponent } from './manter-categoria.component';
@@ -19,7 +20,8 @@ import { CategoriaService } from './categoria.service';
 		MatCardModule,
 		MatTableModule,
 		FormsModule,
-        ReactiveFormsModule,
+		ReactiveFormsModule,
+		PopoverModule.forRoot()
 	],
 	providers: [
 		CategoriaService

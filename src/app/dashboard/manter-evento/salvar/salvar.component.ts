@@ -39,9 +39,8 @@ export class SalvarComponent implements OnInit, OnDestroy {
 		this.initForm();
 		this.subscription = this.categoriaService.listarCategorias().subscribe(
             (res) => {
-				//this.toastrService.success('Mensagem', res.mensagem);
 				this.categorias = res;
-            },
+			},
             (err: HttpErrorResponse) => {
                 this.toastrService.warning('Erro', err.error.stack || err.statusText);
             },
@@ -49,7 +48,11 @@ export class SalvarComponent implements OnInit, OnDestroy {
         );
 	}
 
-	ngOnDestroy(): void { }
+	ngOnDestroy(): void {
+        if (this.subscription) {
+            this.subscription.unsubscribe();
+        }
+    }
 
 	initForm(): void {
 		this.formulario = this.formBuilder.group({
