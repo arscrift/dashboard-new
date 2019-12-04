@@ -1,0 +1,119 @@
+version: '3.7'
+services:
+  web:
+    image: strund3r/arscrift-web:latest
+    networks:
+      - traefik-public
+      - default
+    deploy:
+      replicas: 3
+      update_config:
+        parallelism: 2
+        delay: 10s
+        monitor: 2m
+        failure_action: rollback
+      rollback_config:
+        parallelism: 2
+        delay: 10s
+        monitor: 2m
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - node.role == worker
+      labels:
+        - "traefik.http.routers.web.rule=Host(`arscrift.digital`)"
+        - "traefik.http.routers.web.service=web"
+        - "traefik.http.services.web.loadbalancer.server.port=82"
+        - "traefik.http.routers.web.tls.certresolver=leresolver"
+        - "traefik.http.routers.web.entrypoints=websecure"
+
+  dashboard:
+    image: strund3r/arscrift-dashboard:latest
+    networks:
+      - traefik-public
+      - default
+    deploy:
+      replicas: 3
+      update_config:
+        parallelism: 2
+        delay: 10s
+        monitor: 2m
+        failure_action: rollback
+      rollback_config:
+        parallelism: 2
+        delay: 10s
+        monitor: 2m
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - node.role == worker
+      labels:
+        - "traefik.http.routers.dashboard.rule=Host(`dashboard.arscrift.digital`)"
+        - "traefik.http.routers.dashboard.service=dashboard"
+        - "traefik.http.services.dashboard.loadbalancer.server.port=81"
+        - "traefik.http.routers.dashboard.tls.certresolver=leresolver"
+        - "traefik.http.routers.dashboard.entrypoints=websecure"
+
+  dashboard-new:
+    image: strund3r/arscrift-dashboard-new:latest
+    networks:
+      - traefik-public
+      - default
+    deploy:
+      replicas: 3
+      update_config:
+        parallelism: 2
+        delay: 10s
+        monitor: 2m
+        failure_action: rollback
+      rollback_config:
+        parallelism: 2
+        delay: 10s
+        monitor: 2m
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - node.role == worker
+      labels:
+        - "traefik.http.routers.dashboard-new.rule=Host(`dashboard-new.arscrift.digital`)"
+        - "traefik.http.routers.dashboard-new.service=dashboard-new"
+        - "traefik.http.services.dashboard-new.loadbalancer.server.port=83"
+        - "traefik.http.routers.dashboard-new.tls.certresolver=leresolver"
+        - "traefik.http.routers.dashboard-new.entrypoints=websecure"
+
+  api:
+    image: strund3r/arscrift-api:latest
+    networks:
+      - traefik-public
+      - default
+    deploy:
+      replicas: 3
+      update_config:
+        parallelism: 2
+        delay: 10s
+        monitor: 2m
+        failure_action: rollback
+      rollback_config:
+        parallelism: 2
+        delay: 10s
+        monitor: 2m
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - node.role == worker
+      labels:
+        - "traefik.http.routers.api.rule=Host(`api.arscrift.digital`)"
+        - "traefik.http.routers.api.service=api"
+        - "traefik.http.services.api.loadbalancer.server.port=8393"
+        - "traefik.http.routers.api.tls.certresolver=leresolver"
+        - "traefik.http.routers.api.entrypoints=websecure"
+
+networks:
+  traefik-public:
+    external: true
+  default:
+    external: false
