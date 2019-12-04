@@ -4,7 +4,7 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 To start the dashboard, run the command:
 ```
-docker run -itd --rm --name dashboard-new -p 80:81 strund3r/arscrift-dashboard-new
+docker run -itd --rm --name dashboard-new -p 80:83 strund3r/arscrift-dashboard-new
 ```
 
 ## Development server
