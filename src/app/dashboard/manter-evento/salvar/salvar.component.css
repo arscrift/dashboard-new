@@ -19,10 +19,8 @@
     color: #13294b;
     border-color: #13294b;
 }
-.upload-drop-zone.drop {
-    .dropzone-link {
-        color: #d9d9d9;
-    }
+.upload-drop-zone.drop .dropzone-link {
+    color: #d9d9d9;
 }
 
 .dropzone-link {

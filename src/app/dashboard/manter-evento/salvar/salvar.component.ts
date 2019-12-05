@@ -1,8 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { EventoModel } from 'src/app/model/models.model';
 import { Subscription } from 'rxjs';
+import { EventoModel } from '../evento.model';
+import { EventoService } from '../evento.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { CategoriaService } from '../../manter-categoria/categoria.service';
+import { CategoriaModel } from '../../manter-categoria/categoria.model';
 
 @Component({
 	selector: 'salvar',
@@ -18,20 +22,37 @@ export class SalvarComponent implements OnInit, OnDestroy {
 	public btnAcionado: boolean = false;
 	public arquivoCarregado: boolean = false;
 	public nomeDoArquivo: string;
+	public categorias: CategoriaModel[];
 
 	public formulario: FormGroup;
 	private subscription: Subscription;
 
 	constructor(
 		private notification: ToastrService,
-		private formBuilder: FormBuilder
+		private formBuilder: FormBuilder,
+		private toastrService: ToastrService,
+		private eventoService: EventoService,
+		private categoriaService: CategoriaService
 	) { }
 
 	ngOnInit() {
 		this.initForm();
+		this.subscription = this.categoriaService.listarCategorias().subscribe(
+            (res) => {
+				this.categorias = res;
+			},
+            (err: HttpErrorResponse) => {
+                this.toastrService.warning('Erro', err.error.stack || err.statusText);
+            },
+            () => {}
+        );
 	}
 
-	ngOnDestroy(): void { }
+	ngOnDestroy(): void {
+        if (this.subscription) {
+            this.subscription.unsubscribe();
+        }
+    }
 
 	initForm(): void {
 		this.formulario = this.formBuilder.group({
@@ -61,16 +82,16 @@ export class SalvarComponent implements OnInit, OnDestroy {
 	salvar(): void {
 		if (this.formulario.valid) {
 			this.btnAcionado = true;
-			const evento = new EventoModel(this.formulario.value);
+			this.evento = new EventoModel(this.formulario.value);
 			if (this.arquivo) {
-				evento.imagem = this.arquivo;
+				this.evento.imagem = this.arquivo;
 			}
 			if (this.evento.codigo) {
-				evento.codigo = this.evento.codigo;
-				this.alterar(evento);
+				this.evento.codigo = this.evento.codigo;
+				this.alterar(this.evento);
 			} else {
 				if (this.arquivo) {
-					this.inserir(evento);
+					this.inserir(this.evento);
 				} else {
 					this.notification.warning('Mensagem', 'Formulário invalido. É preciso fazer upload de uma foto.');
 					this.btnAcionado = false;
@@ -82,31 +103,31 @@ export class SalvarComponent implements OnInit, OnDestroy {
 	}
 
 	inserir(evento: EventoModel): void {
-		// this.subscription = this.eventoServico.inserirConsulta(evento).subscribe(
-		//     (res) => {
-		//         this.notification.success('Mensagem', res.mensagem);
-		//         this.btnAcionado = false;
-		//     },
-		//     (err: HttpErrorResponse) => {
-		//         this.btnAcionado = false;
-		//         this.notification.warning('Erro', err.error.stack || err.statusText);
-		//     },
-		//     () => {}
-		// );
+		this.subscription = this.eventoService.inserirEvento(evento).subscribe(
+		    (res) => {
+		        this.notification.success('Mensagem', res.mensagem);
+		        this.btnAcionado = false;
+		    },
+		    (err: HttpErrorResponse) => {
+		        this.btnAcionado = false;
+		        this.notification.warning('Erro', err.error.stack || err.statusText);
+		    },
+		    () => {}
+		);
 	}
 
 	alterar(evento: EventoModel): void {
-		// this.subscription = this.eventoServico.alterarConsulta(evento).subscribe(
-		//     (res) => {
-		//         this.notification.success('Mensagem', res.mensagem);
-		//         this.btnAcionado = false;
-		//     },
-		//     (err: HttpErrorResponse) => {
-		//         this.btnAcionado = false;
-		//         this.notification.warning('Erro', err.error.stack || err.statusText);
-		//     },
-		//     () => {}
-		// );
+		this.subscription = this.eventoService.alterarEvento(evento).subscribe(
+		    (res) => {
+		        this.notification.success('Mensagem', res.mensagem);
+		        this.btnAcionado = false;
+		    },
+		    (err: HttpErrorResponse) => {
+		        this.btnAcionado = false;
+		        this.notification.warning('Erro', err.error.stack || err.statusText);
+		    },
+		    () => {}
+		);
 	}
 
 	onDrop(file: FileList): void {

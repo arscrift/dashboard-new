@@ -1,10 +1,21 @@
 <mat-card class="card-form" [formGroup]="formulario">
+    <mat-card-title>Evento</mat-card-title>
+
     <mat-form-field>
         <input matInput placeholder="Titulo" formControlName="titulo">
     </mat-form-field>
 
     <mat-form-field>
         <textarea matInput placeholder="Descrição" formControlName="descricao"></textarea>
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>Categoria</mat-label>
+        <mat-select>
+            <mat-option *ngFor="let categoria of categorias" [value]="categoria.codigo">
+                {{categoria.nome}}
+            </mat-option>
+        </mat-select>
     </mat-form-field>
 
     <mat-form-field>
@@ -24,6 +35,7 @@
     </mat-form-field>
 
     <div class="col-12">
+        <label>Imagem</label>
         <input type="file" accept="image/jpeg" #fileinput style="display: none;"
             (change)="onDrop(fileinput.files); fileinput.value = ''">
 
@@ -41,4 +53,5 @@
             </li>
         </ul>
     </div>
+    <button mat-raised-button color="primary" (click)="salvar()">Salvar</button>
 </mat-card>
